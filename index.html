@@ -5,7 +5,48 @@
     <title>Task App</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        
+        /* layout rules */
+        * { box-sizing: border-box; }
+
+        #tasks { width: 100%; }
+
+        .row {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid gray; /* underline row in gray */
+        }
+
+        /* description takes ~90% of the row */
+        .task-description {
+            flex: 9 1 90%;
+            padding-right: 0.5em;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        /*
+         status takes ~10% of the row, is at least 4em wide (can grow),
+         and is exactly 1em tall. Text centered inside its background.
+        */
+        .task-status {
+            flex: 1 1 10%;
+            min-width: 4em;
+            height: 1em;               /* exactly 1em tall */
+            display: flex;
+            align-items: center;       /* vertical centering */
+            justify-content: center;   /* horizontal centering */
+            line-height: 1em;
+            color: #fff;
+            font-size: 0.85em;
+            border-radius: 0.25em;
+            margin-left: 0.25em;
+        }
+
+        /* optional status colors */
+        .todo { background: #d9534f; }   /* red */
+        .doing { background: #f0ad4e; }  /* orange */
+        .done { background: #5cb85c; }   /* green */
     </style>
 </head>
 
