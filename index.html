@@ -1,167 +1,193 @@
+<!-- language: html -->
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Tests for index.html</title>
+  <meta charset="utf-8" />
+  <title>tests: index.html</title>
   <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 1rem; line-height: 1.4; }
-    .pass { color: #155724; background: #d4edda; padding: .25rem .5rem; border-radius: .25rem; display: inline-block; }
-    .fail { color: #721c24; background: #f8d7da; padding: .25rem .5rem; border-radius: .25rem; display: inline-block; }
-    .test { margin: .5rem 0; }
-    pre { background: #f5f5f5; padding: .5rem; border-radius: .25rem; overflow: auto; }
+    body{font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding:1rem;}
+    .pass{color:#155724;background:#d4edda;padding:.25rem .5rem;border-radius:.25rem;display:inline-block;}
+    .fail{color:#721c24;background:#f8d7da;padding:.25rem .5rem;border-radius:.25rem;display:inline-block;}
+    .test{margin:.5rem 0;}
+    pre{background:#f5f5f5;padding:.5rem;border-radius:.25rem;overflow:auto;}
+    iframe{width:100%;height:240px;border:1px solid #ccc;margin-top:1rem;}
+    .small{font-size:.9rem;color:#666}
   </style>
 </head>
 <body>
-  <h2>Automated tests for index.html</h2>
-  <div id="output">Running tests...</div>
+  <h2>Browser tests for index.html</h2>
+  <p class="small">This page loads index.html into an iframe and runs the same checks the test-suite expects.</p>
+
+  <div id="output">Loading index.html for tests…</div>
+  <iframe id="target" src="index.html" title="index.html preview"></iframe>
 
   <script>
     (function(){
+      const out = document.getElementById('output');
+      const iframe = document.getElementById('target');
+
       function el(html){ const d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
 
-      function run() {
-        const results = [];
-        try {
-          const styleEl = document.querySelector('style');
-          const styleText = styleEl ? styleEl.innerHTML : '';
-
-          function matchCount(regex) {
-            const m = styleText.match(regex);
-            return m ? m.length : 0;
-          }
-
-          // Test A
-          try {
-            const regexA = /\.task-description.*{[\s\S][^}]*flex.*:.*90%.*;/g;
-            const countA = matchCount(regexA);
-            results.push({
-              name: "the tasks-description should take 90% of the row",
-              passed: countA === 1,
-              detail: "matches: " + countA
-            });
-          } catch (e) {
-            results.push({name: "the tasks-description should take 90% of the row", passed:false, detail: String(e)});
-          }
-
-          // Test B
-          try {
-            const regexB = /\.task-status.*{[\s\S][^}]*flex.*:.*10%.*;/g;
-            const countB = matchCount(regexB);
-            results.push({
-              name: "the tasks-status should take 10% of the row",
-              passed: countB === 1,
-              detail: "matches: " + countB
-            });
-          } catch (e) {
-            results.push({name: "the tasks-status should take 10% of the row", passed:false, detail: String(e)});
-          }
-
-          // Test C - row underline in gray
-          try {
-            const row = document.querySelector('.row');
-            if (!row) {
-              results.push({name: "each row should be underlined in gray", passed:false, detail: ".row element not found"});
-            } else {
-              const style = window.getComputedStyle(row);
-              const border = style.getPropertyValue('border-bottom') || style.getPropertyValue('border');
-              const hasPx = border.includes('px');
-              const hasSolid = border.includes('solid');
-              const hasGrayRgb = border.includes('rgb(128, 128, 128)');
-              const passed = hasPx && hasSolid && hasGrayRgb;
-              results.push({
-                name: "each row should be underlined in gray",
-                passed: passed,
-                detail: "computed border-bottom: " + border
-              });
-            }
-          } catch (e) {
-            results.push({name: "each row should be underlined in gray", passed:false, detail:String(e)});
-          }
-
-          // Test D - task-status text-align center
-          try {
-            const ts = document.querySelector('.task-status');
-            if (!ts) {
-              results.push({name: "the task-status should be centered within its background color", passed:false, detail: ".task-status element not found"});
-            } else {
-              const style = window.getComputedStyle(ts);
-              const textAlign = style.getPropertyValue('text-align');
-              results.push({
-                name: "the task-status should be centered within its background color",
-                passed: textAlign === 'center',
-                detail: "text-align: " + textAlign
-              });
-            }
-          } catch (e) {
-            results.push({name: "the task-status should be centered within its background color", passed:false, detail:String(e)});
-          }
-
-          // Test E - min-width 4em
-          try {
-            const regexE = /\.task-status.*{[\s\S][^}]*min-width.*:.*4em.*;/g;
-            const countE = matchCount(regexE);
-            results.push({
-              name: "the tasks-status should be at least 4em wide but can grow larger",
-              passed: countE === 1,
-              detail: "matches: " + countE
-            });
-          } catch (e) {
-            results.push({name: "the tasks-status should be at least 4em wide but can grow larger", passed:false, detail:String(e)});
-          }
-
-          // Test F - height 1em
-          try {
-            const regexF = /\.task-status.*{[\s\S][^}]*height.*:.*1em.*;/g;
-            const countF = matchCount(regexF);
-            results.push({
-              name: "the tasks-status should be exactly 1em tall",
-              passed: countF === 1,
-              detail: "matches: " + countF
-            });
-          } catch (e) {
-            results.push({name: "the tasks-status should be exactly 1em tall", passed:false, detail:String(e)});
-          }
-
-        } catch (err) {
-          results.push({name: "Test harness error", passed:false, detail: String(err)});
-        }
-
-        // Render results
-        const out = document.getElementById('output');
+      function renderResults(results){
         out.innerHTML = '';
         const passedCount = results.filter(r=>r.passed).length;
         const total = results.length;
         out.appendChild(el('<div><strong>Summary:</strong> ' + passedCount + ' / ' + total + ' passed</div>'));
 
-        results.forEach(r => {
+        results.forEach(r=>{
           const div = document.createElement('div');
           div.className = 'test';
           const badge = document.createElement('span');
           badge.className = r.passed ? 'pass' : 'fail';
           badge.textContent = r.passed ? 'PASS' : 'FAIL';
           const title = document.createElement('span');
-          title.style.marginLeft = '0.5rem';
+          title.style.marginLeft = '.5rem';
           title.textContent = r.name;
           div.appendChild(badge);
           div.appendChild(title);
           const details = document.createElement('div');
           details.style.marginLeft = '3.5rem';
-          details.style.marginTop = '0.25rem';
+          details.style.marginTop = '.25rem';
           details.textContent = r.detail;
           div.appendChild(details);
           out.appendChild(div);
         });
 
-        // Add raw diagnostics for convenience
         out.appendChild(el('<hr/>'));
         const pre = document.createElement('pre');
         pre.textContent = JSON.stringify(results, null, 2);
         out.appendChild(pre);
       }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', run);
-      } else run();
+      function runTestsOn(doc, win){
+        const results = [];
+
+        const styleEl = doc.querySelector('style');
+        const styleText = styleEl ? styleEl.innerHTML : '';
+        function matchCount(regex){
+          const m = styleText.match(regex);
+          return m ? m.length : 0;
+        }
+
+        // Test A
+        try {
+          const regexA = /\.task-description.*{[\s\S][^}]*flex.*:.*90%.*;/g;
+          const countA = matchCount(regexA);
+          results.push({
+            name: "the tasks-description should take 90% of the row",
+            passed: countA === 1,
+            detail: "matches: " + countA
+          });
+        } catch(e){
+          results.push({name:"the tasks-description should take 90% of the row", passed:false, detail: String(e)});
+        }
+
+        // Test B
+        try {
+          const regexB = /\.task-status.*{[\s\S][^}]*flex.*:.*10%.*;/g;
+          const countB = matchCount(regexB);
+          results.push({
+            name: "the tasks-status should take 10% of the row",
+            passed: countB === 1,
+            detail: "matches: " + countB
+          });
+        } catch(e){
+          results.push({name:"the tasks-status should take 10% of the row", passed:false, detail: String(e)});
+        }
+
+        // Test C - row underline in gray
+        try {
+          const row = doc.querySelector('.row');
+          if(!row){
+            results.push({name:"each row should be underlined in gray", passed:false, detail: ".row element not found"});
+          } else {
+            const style = win.getComputedStyle(row);
+            const border = style.getPropertyValue('border-bottom') || style.getPropertyValue('border') || '';
+            const hasPx = border.includes('px');
+            const hasSolid = border.includes('solid');
+            const hasGrayRgb = border.includes('rgb(128, 128, 128)');
+            const passed = hasPx && hasSolid && hasGrayRgb;
+            results.push({
+              name: "each row should be underlined in gray",
+              passed: passed,
+              detail: "computed border-bottom: " + border
+            });
+          }
+        } catch(e){
+          results.push({name:"each row should be underlined in gray", passed:false, detail: String(e)});
+        }
+
+        // Test D - task-status text-align center
+        try {
+          const ts = doc.querySelector('.task-status');
+          if(!ts){
+            results.push({name:"the task-status should be centered within its background color", passed:false, detail: ".task-status element not found"});
+          } else {
+            const style = win.getComputedStyle(ts);
+            const textAlign = style.getPropertyValue('text-align');
+            results.push({
+              name: "the task-status should be centered within its background color",
+              passed: textAlign === 'center',
+              detail: "text-align: " + textAlign
+            });
+          }
+        } catch(e){
+          results.push({name:"the task-status should be centered within its background color", passed:false, detail: String(e)});
+        }
+
+        // Test E - min-width 4em
+        try {
+          const regexE = /\.task-status.*{[\s\S][^}]*min-width.*:.*4em.*;/g;
+          const countE = matchCount(regexE);
+          results.push({
+            name: "the tasks-status should be at least 4em wide but can grow larger",
+            passed: countE === 1,
+            detail: "matches: " + countE
+          });
+        } catch(e){
+          results.push({name:"the tasks-status should be at least 4em wide but can grow larger", passed:false, detail: String(e)});
+        }
+
+        // Test F - height 1em
+        try {
+          const regexF = /\.task-status.*{[\s\S][^}]*height.*:.*1em.*;/g;
+          const countF = matchCount(regexF);
+          results.push({
+            name: "the tasks-status should be exactly 1em tall",
+            passed: countF === 1,
+            detail: "matches: " + countF
+          });
+        } catch(e){
+          results.push({name:"the tasks-status should be exactly 1em tall", passed:false, detail: String(e)});
+        }
+
+        return results;
+      }
+
+      iframe.addEventListener('load', function(){
+        let doc, win;
+        try {
+          win = iframe.contentWindow;
+          doc = iframe.contentDocument || win.document;
+          if(!doc){
+            out.textContent = 'Unable to access iframe document (possibly cross-origin).';
+            return;
+          }
+        } catch(err){
+          out.textContent = 'Error accessing iframe: ' + String(err);
+          return;
+        }
+
+        const results = runTestsOn(doc, win);
+        renderResults(results);
+      });
+
+      // Safety: if iframe fails to load within 5s, show message
+      setTimeout(()=>{
+        if(out.innerText.includes('Loading')){
+          out.textContent = 'Timed out waiting for index.html to load in the iframe.';
+        }
+      }, 5000);
     })();
   </script>
 </body>
