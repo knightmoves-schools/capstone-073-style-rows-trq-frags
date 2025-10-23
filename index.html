@@ -1,73 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
 <head>
-    <title>Task App</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* layout rules */
-        * { box-sizing: border-box; }
-
-        #tasks { width: 100%; }
-
-        .row {
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid gray; /* underline row in gray */
-        }
-
-        /* description takes ~90% of the row */
-        .task-description {
-            flex: 9 1 90%;
-            padding-right: 0.5em;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        /*
-         status takes ~10% of the row, is at least 4em wide (can grow),
-         and is exactly 1em tall. Text centered inside its background.
-        */
-        .task-status {
-            flex: 1 1 10%;
-            min-width: 4em;
-            height: 1em;               /* exactly 1em tall */
-            display: flex;
-            align-items: center;       /* vertical centering within background */
-            justify-content: center;   /* horizontal centering within background */
-            align-self: center;        /* keep the 1em background vertically centered in the row */
-            padding: 0;                /* ensure no extra padding shifts the text */
-            line-height: 1em;
-            color: #fff;
-            font-size: 0.85em;
-            border-radius: 0.25em;
-            margin-left: 0.25em;
-            box-sizing: border-box;
-        }
-
-        /* optional status colors */
-        .todo { background: #d9534f; }   /* red */
-        .doing { background: #f0ad4e; }  /* orange */
-        .done { background: #5cb85c; }   /* green */
-    </style>
+  <meta charset="utf-8">
+  <title>Tests for index.html</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 1rem; line-height: 1.4; }
+    .pass { color: #155724; background: #d4edda; padding: .25rem .5rem; border-radius: .25rem; display: inline-block; }
+    .fail { color: #721c24; background: #f8d7da; padding: .25rem .5rem; border-radius: .25rem; display: inline-block; }
+    .test { margin: .5rem 0; }
+    pre { background: #f5f5f5; padding: .5rem; border-radius: .25rem; overflow: auto; }
+  </style>
 </head>
-
 <body>
-    <div id="tasks">
-        <div id="task-row-1" class="row">
-            <div id="task-description-1" class="task-description">pack spikes for track meet</div>
-            <div id="task-status-1" class="todo task-status">todo</div>
-        </div>
-        <div id="task-row-2" class="row">
-            <div id="task-description-2" class="task-description">write draft english paper</div>
-            <div id="task-status-2" class="doing task-status">doing</div>
-        </div>
-        <div id="task-row-3" class="row">
-            <div id="task-description-3" class="task-description">finish math homework</div>
-            <div id="task-status-3" class="done task-status">done</div>
-        </div>
-    </div>
-</body>
+  <h2>Automated tests for index.html</h2>
+  <div id="output">Running tests...</div>
 
+  <script>
+    (function(){
+      function el(html){ const d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
+
+      function run() {
+        const results = [];
+        try {
+          const styleEl = document.querySelector('style');
+          const styleText = styleEl ? styleEl.innerHTML : '';
+
+          function matchCount(regex) {
+            const m = styleText.match(regex);
+            return m ? m.length : 0;
+          }
+
+          // Test A
+          try {
+            const regexA = /\.task-description.*{[\s\S][^}]*flex.*:.*90%.*;/g;
+            const countA = matchCount(regexA);
+            results.push({
+              name: "the tasks-description should take 90% of the row",
+              passed: countA === 1,
+              detail: "matches: " + countA
+            });
+          } catch (e) {
+            results.push({name: "the tasks-description should take 90% of the row", passed:false, detail: String(e)});
+          }
+
+          // Test B
+          try {
+            const regexB = /\.task-status.*{[\s\S][^}]*flex.*:.*10%.*;/g;
+            const countB = matchCount(regexB);
+            results.push({
+              name: "the tasks-status should take 10% of the row",
+              passed: countB === 1,
+              detail: "matches: " + countB
+            });
+          } catch (e) {
+            results.push({name: "the tasks-status should take 10% of the row", passed:false, detail: String(e)});
+          }
+
+          // Test C - row underline in gray
+          try {
+            const row = document.querySelector('.row');
+            if (!row) {
+              results.push({name: "each row should be underlined in gray", passed:false, detail: ".row element not found"});
+            } else {
+              const style = window.getComputedStyle(row);
+              const border = style.getPropertyValue('border-bottom') || style.getPropertyValue('border');
+              const hasPx = border.includes('px');
+              const hasSolid = border.includes('solid');
+              const hasGrayRgb = border.includes('rgb(128, 128, 128)');
+              const passed = hasPx && hasSolid && hasGrayRgb;
+              results.push({
+                name: "each row should be underlined in gray",
+                passed: passed,
+                detail: "computed border-bottom: " + border
+              });
+            }
+          } catch (e) {
+            results.push({name: "each row should be underlined in gray", passed:false, detail:String(e)});
+          }
+
+          // Test D - task-status text-align center
+          try {
+            const ts = document.querySelector('.task-status');
+            if (!ts) {
+              results.push({name: "the task-status should be centered within its background color", passed:false, detail: ".task-status element not found"});
+            } else {
+              const style = window.getComputedStyle(ts);
+              const textAlign = style.getPropertyValue('text-align');
+              results.push({
+                name: "the task-status should be centered within its background color",
+                passed: textAlign === 'center',
+                detail: "text-align: " + textAlign
+              });
+            }
+          } catch (e) {
+            results.push({name: "the task-status should be centered within its background color", passed:false, detail:String(e)});
+          }
+
+          // Test E - min-width 4em
+          try {
+            const regexE = /\.task-status.*{[\s\S][^}]*min-width.*:.*4em.*;/g;
+            const countE = matchCount(regexE);
+            results.push({
+              name: "the tasks-status should be at least 4em wide but can grow larger",
+              passed: countE === 1,
+              detail: "matches: " + countE
+            });
+          } catch (e) {
+            results.push({name: "the tasks-status should be at least 4em wide but can grow larger", passed:false, detail:String(e)});
+          }
+
+          // Test F - height 1em
+          try {
+            const regexF = /\.task-status.*{[\s\S][^}]*height.*:.*1em.*;/g;
+            const countF = matchCount(regexF);
+            results.push({
+              name: "the tasks-status should be exactly 1em tall",
+              passed: countF === 1,
+              detail: "matches: " + countF
+            });
+          } catch (e) {
+            results.push({name: "the tasks-status should be exactly 1em tall", passed:false, detail:String(e)});
+          }
+
+        } catch (err) {
+          results.push({name: "Test harness error", passed:false, detail: String(err)});
+        }
+
+        // Render results
+        const out = document.getElementById('output');
+        out.innerHTML = '';
+        const passedCount = results.filter(r=>r.passed).length;
+        const total = results.length;
+        out.appendChild(el('<div><strong>Summary:</strong> ' + passedCount + ' / ' + total + ' passed</div>'));
+
+        results.forEach(r => {
+          const div = document.createElement('div');
+          div.className = 'test';
+          const badge = document.createElement('span');
+          badge.className = r.passed ? 'pass' : 'fail';
+          badge.textContent = r.passed ? 'PASS' : 'FAIL';
+          const title = document.createElement('span');
+          title.style.marginLeft = '0.5rem';
+          title.textContent = r.name;
+          div.appendChild(badge);
+          div.appendChild(title);
+          const details = document.createElement('div');
+          details.style.marginLeft = '3.5rem';
+          details.style.marginTop = '0.25rem';
+          details.textContent = r.detail;
+          div.appendChild(details);
+          out.appendChild(div);
+        });
+
+        // Add raw diagnostics for convenience
+        out.appendChild(el('<hr/>'));
+        const pre = document.createElement('pre');
+        pre.textContent = JSON.stringify(results, null, 2);
+        out.appendChild(pre);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+      } else run();
+    })();
+  </script>
+</body>
 </html>
