@@ -34,13 +34,16 @@
             min-width: 4em;
             height: 1em;               /* exactly 1em tall */
             display: flex;
-            align-items: center;       /* vertical centering */
-            justify-content: center;   /* horizontal centering */
+            align-items: center;       /* vertical centering within background */
+            justify-content: center;   /* horizontal centering within background */
+            align-self: center;        /* keep the 1em background vertically centered in the row */
+            padding: 0;                /* ensure no extra padding shifts the text */
             line-height: 1em;
             color: #fff;
             font-size: 0.85em;
             border-radius: 0.25em;
             margin-left: 0.25em;
+            box-sizing: border-box;
         }
 
         /* optional status colors */
