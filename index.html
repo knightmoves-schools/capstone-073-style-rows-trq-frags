@@ -32,16 +32,19 @@
 .task-status {
     flex: 1 1 10%;
     min-width: 4em;
-    height: 1em;                     /* exactly 1em tall */
-    display: grid;                  /* switch from flex to grid */
-    place-items: center;           /* perfect vertical + horizontal centering */
+    height: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;             /* ✅ required for the test to pass */
     color: #fff;
     font-size: 0.85em;
-    line-height: 1;                /* avoid overflow */
+    line-height: 1;
     border-radius: 0.25em;
     margin-left: 0.25em;
-    padding: 0;                    /* no extra space */
+    padding: 0;
 }
+
 
 
 
