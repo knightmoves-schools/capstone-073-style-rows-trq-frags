@@ -30,17 +30,21 @@
          and is exactly 1em tall. Text centered inside its background.
         */
         .task-status {
-            flex: 1 1 10%;
-            min-width: 4em;
-            padding: 0.25em 0.5em;           /* vertical and horizontal padding */
-            display: flex;
-            align-items: center;             /* vertical centering */
-            justify-content: center;         /* horizontal centering */
-            color: #fff;
-            font-size: 0.85em;
-            border-radius: 0.25em;
-            margin-left: 0.25em;
-        }
+    flex: 1 1 10%;
+    min-width: 4em;
+    height: 1em;                     /* exactly 1em tall */
+    display: flex;
+    align-items: center;            /* vertical centering */
+    justify-content: center;        /* horizontal centering */
+    color: #fff;
+    font-size: 0.85em;
+    border-radius: 0.25em;
+    margin-left: 0.25em;
+    line-height: 1;                 /* ensures vertical alignment within 1em height */
+    padding: 0;                     /* remove padding to preserve exact height */
+}
+
+}
 
 
         /* optional status colors */
